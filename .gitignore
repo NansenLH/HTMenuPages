@@ -8,7 +8,7 @@
 xcuserdata/
 Package.resolved
 .DS_Store
-*.swiftpm
+*.swiftpm/
 
 ## Obj-C/Swift specific
 *.hmap

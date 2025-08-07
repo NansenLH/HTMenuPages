@@ -8,7 +8,7 @@ import Foundation
 import UIKit
 
 
-public protocol HTMenuPagesViewDataSource: AnyObject {
+@MainActor public protocol HTMenuPagesViewDataSource: AnyObject {
     /// 一共显示多少个页面. 如果配置了 HTMenuPagesTitleView, 数据会从 HTMenuPagesTitleView 中获取, 不会调用此方法
     func menuPagesShowNumbers(pagesView: HTMenuPagesView) -> Int
     
@@ -16,7 +16,7 @@ public protocol HTMenuPagesViewDataSource: AnyObject {
     func menuPagesShowView(pagesView: HTMenuPagesView, index: Int) -> UIViewController & HTMenuPagesViewDelegate
 }
 
-public protocol HTMenuPagesViewDelegate: AnyObject {
+@MainActor public protocol HTMenuPagesViewDelegate: AnyObject {
     /// 页面加载最新数据的方法. 首次加载页面必定会执行此方法
     func menuPagesLoadData(pageIndex: Int, onScreen: Bool)
     
@@ -204,14 +204,14 @@ public class HTMenuPagesView: UIView {
         scrollView.isUserInteractionEnabled = true
         
         let endIndex = lround(scrollView.contentOffset.x / scrollView.frame.width)
+        
+        if let titleV = titleView {
+            titleV.pageDraggingEnd(atIndex: endIndex)
+        }
+        
         if endIndex != pageIndex {
             scrollDidDisapperPage(atIndex: pageIndex)
             pageIndex = endIndex
-            
-            if let titleV = titleView {
-                titleV.pageDraggingEnd(atIndex: pageIndex)
-            }
-            
             if loadMode == .near {
                 if endIndex-1 >= 0 {
                     showPage(atIndex: endIndex-1, onScreen: false)    
